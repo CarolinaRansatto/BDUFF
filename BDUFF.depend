@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1480449266 source:c:\users\carolina\dropbox\faculdade\codeblocks\bduff\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
