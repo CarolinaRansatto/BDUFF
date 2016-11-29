@@ -63,13 +63,19 @@ int create(char* table) {
 }
 
 int insert(char* table) {
-    //char* ntable = strcat(table, ".ctl");
-    //char* ndata = strcat(table, ".dad");
+    char ntable[31], ndata[31];
+    strcpy(ntable, table);
+    strcat(ntable, ".ctl");
+    strcpy(ndata, table);
+    strcat(ndata, ".dad");
     return 0;
 }
 
 int select(char* table) {
-    //char* ntable = strcat(table, ".ctl");
-    //char* ndata = strcat(table, ".dad");
+    char ntable[31], ndata[31];
+    strcpy(ntable, table);
+    strcat(ntable, ".ctl");
+    strcpy(ndata, table);
+    strcat(ndata, ".dad");
     return 0;
 }
