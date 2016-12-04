@@ -49,11 +49,22 @@ char* format(char* s) {
 }
 
 int create(FILE* sql) {
-    char narq[31], table[31];
+    char narq[31], table[31], narqdad[31];
     fscanf(sql, " TABLE %s (", table);
+
+    // Nomeia arquivo ctl que será preenchido aqui
     strcpy(narq, table);
     strcat(narq, ".ctl");
+
+    // nomeia arquivo dad que será reenchido posteriormente
+    strcpy(narq_dad, table);
+    strcat(narq_dad, ".dad");
+
+    // cria os arquivos? Ou só cria se não existir antes?
     FILE* arq = fopen(narq, "wt"); //verificar se o arquivo existe antes?
+    FILE* arqdad = fopen(narqdad, "wt"); //verificar se o arquivo existe antes?
+    fclose(arq_dad);
+
     if (!arq) {
         printf("Erro ao criar tabela %s", table);
         return 1;
@@ -63,6 +74,7 @@ int create(FILE* sql) {
     long pos = ftell(sql);
     fscanf(sql, "%s", s);
     int i = strlen(s) - 1, n = 0, a = 0;
+
     while (s[i] != ')') { //na verdade o fim deveria ser );
         if (s[i] == ',') ++n;
         fscanf(sql, "%s", s);
@@ -71,6 +83,7 @@ int create(FILE* sql) {
     fprintf(arq, "%i,0\n", ++n);
 
     fseek(sql, pos, SEEK_SET);
+
     while (a < n) {
         fscanf(sql, "%s", s);
         i = strlen(s) - 1;
@@ -126,11 +139,27 @@ int insert(FILE* sql) {
 }
 
 int select(FILE* sql) {
+    /**
+        um comando de consulta aos dados (SELECT – Seção 6) e,
+        neste caso, um arquivo .alg
+        contendo a sequência de comandos algébricos
+        correspondentes, um em cada linha, deverá ser gerado e
+        logo em seguida lido e executado.
+    **/
+    // TODO: testes
+
     char table[31], data[31];
-    //TODO: ler nome da tabela
+    // "SELECT * FROM TABLE_NAME"
+    table = fscanf(sql, " FROM %s ", table);
     strcpy(data, table);
     strcat(table, ".ctl");
     strcat(data, ".dad");
-    //TODO: abrir arquivos, achar dados, mostrar tuplas
+
+    //TODO: abrir arquivos, achar dados, mostrar tuplas, gerar .alg
+
+    FILE* arq_ctl = fopen(fname, "rt");
+    FILE* arq_dad = fopen(fname, "rt");
+
+
     return 0;
 }
