@@ -49,7 +49,7 @@ char* format(char* s) {
 }
 
 int create(FILE* sql) {
-    char narq[31], table[31], narqdad[31];
+    char narq[31], table[31], narq_dad[31];
     fscanf(sql, " TABLE %s (", table);
 
     // Nomeia arquivo ctl que será preenchido aqui
@@ -62,7 +62,7 @@ int create(FILE* sql) {
 
     // cria os arquivos? Ou só cria se não existir antes?
     FILE* arq = fopen(narq, "wt"); //verificar se o arquivo existe antes?
-    FILE* arqdad = fopen(narqdad, "wt"); //verificar se o arquivo existe antes?
+    FILE* arq_dad = fopen(narq_dad, "wt"); //verificar se o arquivo existe antes?
     fclose(arq_dad);
 
     if (!arq) {
@@ -104,7 +104,7 @@ int create(FILE* sql) {
 int insert(FILE* sql) {
     char ntable[31], ntablef[31], ndata[31], tupla[501];
     fscanf(sql, "%s", ntable); //pega o INTO
-    ntable = fscanf(sql, "%s", ntable); //colocar "INTO %s" não funcionou
+    fscanf(sql, "%s", ntable); //colocar "INTO %s" não funcionou
 
     strcpy(ntablef, ntable);
     strcpy(ndata, ntable);
@@ -123,28 +123,29 @@ int insert(FILE* sql) {
     FILE* data = fopen(ndata, "at+");
     if (!data) {
         printf("Erro ao criar o arquivo de dados %s", ndata);
-        fclose(table);
         return 1;
     }
 
     int i = 0;
     while (tupla[i] != '\0') {
         // tira os "(" e ");" depois traz todo o resto da string pra frente
-        if (tupla[i] == '(' || tupla[i] == ')' || tupla[i]== ';'){
+        // Aqui é while e não if por conta do ); (devem ser retirados em sequencia)
+        while (tupla[i] == '(' || tupla[i] == ')' || tupla[i]== ';'){
             int j = i;
             while (tupla[j] != '\0'){
                 tupla[j] = tupla[j+1];
                 j++;
             }
-            tupla[j] = NULL;
         }
-
         if (tupla[i] == '"')
             tupla[i] = '\'';
         ++i;
     }
-    //TODO: verificar chave, implementar chave ordenada, verificar nulo
-    fprintf(data, "%s\n", tupla);
+
+    //TODO:  verificar chave, implementar chave ordenada, verificar nulo, aumentar a cardinalidade do ctl
+    fprintf(data, "%s\n", tupla); // escreve no fim do arquivo
+
+    fclose(table);
     fclose(data);
     return 0;
 }
@@ -161,15 +162,15 @@ int select(FILE* sql) {
 
     char table[31], data[31];
     // "SELECT * FROM TABLE_NAME"
-    table = fscanf(sql, " FROM %s ", table); // talvez esse regex não funcione
+    fscanf(sql, " FROM %s ", table); // talvez esse regex não funcione
     strcpy(data, table);
     strcat(table, ".ctl");
     strcat(data, ".dad");
 
     //TODO: abrir arquivos, achar dados, mostrar tuplas, gerar .alg
 
-    FILE* arq_ctl = fopen(fname, "rt");
-    FILE* arq_dad = fopen(fname, "rt");
+    FILE* arq_ctl = fopen(table, "rt");
+    FILE* arq_dad = fopen(data, "rt");
 
     fclose(arq_dad);
     fclose(arq_ctl);
@@ -177,3 +178,5 @@ int select(FILE* sql) {
 
     return 0;
 }
+
+

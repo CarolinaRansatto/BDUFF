@@ -1,1 +1,6 @@
 # depslib dependency file v1.0
+1480878574 source:g:\trabalhobd\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
