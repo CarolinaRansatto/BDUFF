@@ -22,18 +22,18 @@ int run_sql(char* fname) {
     FILE* arq = fopen(fname, "rt");
     if (!arq) return 1;
     char comando[7];
-    int linha = 1, r = fscanf(arq, "%s", comando);
+    int count = 1, r = fscanf(arq, "%s", comando);
     while (r == 1) {
-        char table[31];
         if (!strcmp(comando, "CREATE"))
             r = create(arq);
         else if (!strcmp(comando, "INSERT"))
             r = insert(arq);
         else if (!strcmp(comando, "SELECT"))
             r = select(arq);
-        if (r) printf(" (linha %i)\n", linha);
+        else r = 0;
+        if (r) printf(" (comando %i)\n", count); //mudar pra linha e os métodos retornam quantas linhas andaram no arq?
         r = fscanf(arq, "%s", comando);
-        ++linha;
+        ++count; //conta errado se um comando der erro
     }
     fclose(arq);
     return 0;
@@ -63,7 +63,7 @@ int create(FILE* sql) {
     long pos = ftell(sql);
     fscanf(sql, "%s", s);
     int i = strlen(s) - 1, n = 0, a = 0;
-    while (s[i] != ')') {
+    while (s[i] != ')') { //na verdade o fim deveria ser );
         if (s[i] == ',') ++n;
         fscanf(sql, "%s", s);
         i = strlen(s) - 1;
@@ -89,12 +89,39 @@ int create(FILE* sql) {
 }
 
 int insert(FILE* sql) {
-    char table[31], data[31];
-    //TODO: ler nome da tabela
-    strcpy(data, table);
-    strcat(table, ".ctl");
-    strcat(data, ".dad");
-    //TODO: abrir arquivos, verificar chave, inserir
+    char ntable[31], ntablef[31], ndata[31], tupla[501];
+    fscanf(sql, "%s", ntable); //pega o INTO
+    fscanf(sql, "%s", ntable); //colocar "INTO %s" não funcionou
+    strcpy(ntablef, ntable);
+    strcpy(ndata, ntable);
+    strcat(ntablef, ".ctl");
+    strcat(ndata, ".dad");
+    fscanf(sql, "%s", tupla); //pega o VALUES
+    fscanf(sql, "%s", tupla); //pega a tupla, "(%s);" não funciona
+    FILE* table = fopen(ntablef, "rt");
+    if (!table) {
+        printf("Tentativa de inserir em tabela nao existente: %s", ntable);
+        return 1;
+    }
+    FILE* data = fopen(ndata, "at+");
+    if (!data) {
+        printf("Erro ao criar o arquivo de dados %s", ndata);
+        fclose(table);
+        return 1;
+    }
+
+    int i = 0;
+    while (tupla[i] != '\0') {
+        if (tupla[i] == '"')
+            tupla[i] = '\'';
+        ++i;
+    }
+
+    //TODO: retirar ( e ); da tupla
+    //TODO: verificar chave, implementar chave ordenada, verificar nulo
+    fprintf(data, "%s\n", tupla);
+    fclose(table);
+    fclose(data);
     return 0;
 }
 
