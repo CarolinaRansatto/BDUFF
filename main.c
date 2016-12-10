@@ -7,13 +7,12 @@ int create(FILE* sql);
 int insert(FILE* sql);
 int select(FILE* sql);
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
     int i, e;
     for (i = 1; i < argc; i++) {
         printf("Lendo arquivo %s\n", argv[i]);
         e = run_sql(argv[i]);
-        if (e) printf("Erro ao abrir arquivo\n");
+        if (e) printf("\tErro ao abrir arquivo\n");
     }
     return 0;
 }
@@ -22,6 +21,7 @@ int run_sql(char* fname) {
     FILE* arq = fopen(fname, "rt");
     if (!arq) return 1;
     char comando[7];
+
     int count = 1, r = fscanf(arq, "%s", comando);
     while (r == 1) {
         if (!strcmp(comando, "CREATE"))
@@ -31,20 +31,22 @@ int run_sql(char* fname) {
         else if (!strcmp(comando, "SELECT"))
             r = select(arq);
         else r = 0;
-        if (r) printf(" (comando %i)\n", count); //mudar pra linha e os métodos retornam quantas linhas andaram no arq?
+
+        if (r) printf(" (comando %i)\n", count);
+        else ++count;
         r = fscanf(arq, "%s", comando);
-        ++count; //conta errado se um comando der erro
     }
+
     fclose(arq);
     return 0;
 }
 
 char* format(char* s) {
-    if (!strcmp(s, "KEY")) return "chv";
-    if (!strcmp(s, "INTEGER")) return "I";
-    if (!strcmp(s, "STRING")) return "C";
-    if (!strcmp(s, "NN")) return "nn";
-    if (!strcmp(s, "ORD")) return "ord";
+    if (strcmp(s, "KEY") == 0) return "chv";
+    if (strcmp(s, "INTEGER") == 0) return "I";
+    if (strcmp(s, "STRING") == 0) return "C";
+    if (strcmp(s, "NN") == 0) return "nn";
+    if (strcmp(s, "ORD") == 0) return "ord";
     return s;
 }
 
@@ -56,7 +58,7 @@ int create(FILE* sql) {
     strcpy(narq, table);
     strcat(narq, ".ctl");
 
-    // nomeia arquivo dad que será reenchido posteriormente
+    // nomeia arquivo dad que será preenchido posteriormente
     strcpy(narq_dad, table);
     strcat(narq_dad, ".dad");
 
@@ -66,7 +68,7 @@ int create(FILE* sql) {
     fclose(arq_dad);
 
     if (!arq) {
-        printf("Erro ao criar tabela %s", table);
+        printf("\tErro ao criar tabela %s", table);
         return 1;
     }
 
@@ -75,7 +77,7 @@ int create(FILE* sql) {
     fscanf(sql, "%s", s);
     int i = strlen(s) - 1, n = 0, a = 0;
 
-    while (s[i] != ')') { //na verdade o fim deveria ser );
+    while (s[i] != ';') {
         if (s[i] == ',') ++n;
         fscanf(sql, "%s", s);
         i = strlen(s) - 1;
@@ -88,8 +90,13 @@ int create(FILE* sql) {
         fscanf(sql, "%s", s);
         i = strlen(s) - 1;
         char end = ',';
-        if ((s[i] == ',') || s[i] == ')') {
+        if (s[i] == ',') {
             s[i] = '\0';
+            end = '\n';
+            ++a;
+        }
+        else if  (s[i] == ';') {
+            s[i - 1] = '\0';
             end = '\n';
             ++a;
         }
@@ -102,7 +109,7 @@ int create(FILE* sql) {
 }
 
 int insert(FILE* sql) {
-    char ntable[31], ntablef[31], ndata[31], tupla[501];
+    char ntable[31], ntablef[31], ndata[31], tupla[501], att[501];
     fscanf(sql, "%s", ntable); //pega o INTO
     fscanf(sql, "%s", ntable); //colocar "INTO %s" não funcionou
 
@@ -116,13 +123,14 @@ int insert(FILE* sql) {
 
     FILE* table = fopen(ntablef, "rt");
     if (!table) {
-        printf("Tentativa de inserir em tabela nao existente: %s", ntable);
+        printf("\tTentativa de inserir em tabela nao existente: %s", ntable);
         return 1;
     }
-    fclose(table);
+
     FILE* data = fopen(ndata, "at+");
     if (!data) {
-        printf("Erro ao criar o arquivo de dados %s", ndata);
+        fclose(table);
+        printf("\tErro ao criar o arquivo de dados %s", ndata);
         return 1;
     }
 
@@ -142,10 +150,53 @@ int insert(FILE* sql) {
         ++i;
     }
 
-    //TODO:  verificar chave, implementar chave ordenada, verificar nulo, aumentar a cardinalidade do ctl
+    int grau, card;
+    fscanf(table, "%i,%i", &grau, &card);
+
+    int r = fscanf(table, "%s", att), a = 0;
+
+    //verifica vários att
+    while (r == 1) {
+        printf("%i\n", a);
+        int nn = 0, chv = 0, ord = 0;
+        char *ctl = strtok(att, ","), *nome = ctl;
+        while (ctl) {
+            if (strcmp(ctl, "nn") == 0) nn = 1;
+            if (strcmp(ctl, "chv") == 0) chv = 1;
+            if (strcmp(ctl, "ord") == 0) ord = 1;
+            ctl = strtok(NULL, ",");
+        }
+        printf("passou do while ctl\n");
+        char* value = strtok(tupla, ",");
+        for (i = 0; i < a; i++)
+            value = strtok(NULL, "(,);");
+        printf("passou do for\n");
+        if ((nn) && (strcmp(value, "NULO") == 0)) {
+            fclose(table);
+            fclose(data);
+            printf("\tErro: atributo %s da tabela %s não pode ser nulo", nome, ntable);
+            return 1;
+        }
+        if (chv || ord) {
+            //TODO: fazer processo chaaaaato de percorrer o arquivo de dados, verificar unicidade da chv e ordenação
+            //se for ord pode ter que reescrever o arquivo
+        }
+        ++a;
+        r = fscanf(table, "%s", att);
+    }
+
     fprintf(data, "%s\n", tupla); // escreve no fim do arquivo
 
-    fclose(table);
+    if ((card/10) < ((card + 1)/10)) {
+        fclose(table);
+        //rewrite_file(ntablef);
+    }
+    else {
+        fseek(table, 0L, SEEK_SET);
+        fprintf(table, "%i,%i", grau, ++card);
+        fclose(table);
+    }
+
     fclose(data);
     return 0;
 }
