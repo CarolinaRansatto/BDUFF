@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # depslib dependency file v1.0
 1480878574 source:g:\trabalhobd\main.c
 	<stdio.h>
@@ -19,3 +20,11 @@
 	<stdlib.h>
 	<string.h>
 
+=======
+# depslib dependency file v1.0
+1480878574 source:g:\trabalhobd\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+>>>>>>> 3efa8ca5ca17b5251ff3e25b4cd5110ccaba4416
