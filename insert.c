@@ -7,23 +7,79 @@ void rewrite_ctl(char* narq) {
     strcat(nname, narq);
     FILE* orig = fopen(narq, "rt");
     FILE* dest = fopen(nname, "wt");
+
     int grau, card;
     fscanf(orig, "%i,%i", &grau, &card);
     fprintf(dest, "%i,%i\n", grau, card + 1);
+
     int r = fscanf(orig, "%s", att);
     while (r == 1) {
         fprintf(dest, "%s\n", att);
         r = fscanf(orig, "%s", att);
     }
+
     fclose(orig);
     fclose(dest);
     remove(narq);
     rename(nname, narq);
 }
 
-char* find_value(FILE* arq);
-long find_value_pos(FILE* arq);
-void rewrite_dad(char* narq);
+int check_unique(FILE* arq, int ind, char* value) {
+    fseek(arq, 0L, SEEK_SET);
+    char tupla[501];
+    int r = fscanf(arq, "%s", tupla), i;
+
+    while (r == 1) {
+        char* att = strtok(tupla, ",");
+        for (i = 0; i < ind; i++)
+            att = strtok(NULL, ",");
+        if (strcmp(att, value) == 0) return 1;
+        r = fscanf(arq, "%s", tupla);
+    }
+
+    return 0;
+}
+
+long find_pos(FILE* arq, int ind, char* value) {
+    fseek(arq, 0L, SEEK_SET);
+    char tupla[501];
+
+    while (1) {
+        long pos = ftell(arq);
+        int r = fscanf(arq, "%s", tupla), i;
+        if (r != 1) return -1;
+        char *att = strtok(tupla, ",");
+        for (i = 0; i < ind; i++)
+            att = strtok(NULL, ",");
+        if (strcmp(att, value) > 0)
+            return pos;
+    }
+}
+
+void rewrite_dad(char* narq, long pos, char* values) {
+    char nname[31] = "new_", tupla[501];
+    strcat(nname, narq);
+    FILE* orig = fopen(narq, "rt");
+    FILE* dest = fopen(nname, "wt");
+
+    int r = fscanf(orig, "%s", tupla);
+    while ((r == 1) && (ftell(orig) <= pos)) {
+        fprintf(dest, "%s\n", tupla);
+        r = fscanf(orig, "%s", tupla);
+    }
+
+    fprintf(dest, "%s\n", values);
+
+    while (r == 1) {
+        fprintf(dest, "%s\n", tupla);
+        r = fscanf(orig, "%s", tupla);
+    }
+
+    fclose(orig);
+    fclose(dest);
+    remove(narq);
+    rename(nname, narq);
+}
 
 int insert(FILE* sql) {
     char ntable[31], ntablef[31], ndata[31], tupla[501], att[501], values[501];
@@ -47,7 +103,7 @@ int insert(FILE* sql) {
     FILE* data = fopen(ndata, "at+");
     if (!data) {
         fclose(table);
-        printf("\tErro ao criar o arquivo de dados %s", ndata);
+        printf("\tErro ao abrir o arquivo de dados %s", ndata);
         return 1;
     }
 
@@ -72,7 +128,7 @@ int insert(FILE* sql) {
 
     int r = fscanf(table, "%s", att), a = 0;
     strcpy(values, tupla);
-    long pos;
+    long pos = -1;
 
     while (r == 1) {
         int nn = 0, chv = 0, ord = 0, is_int = 0;
@@ -112,8 +168,8 @@ int insert(FILE* sql) {
         }
 
         if (chv) {
-            char res[31] = find_value(data, a, value);
-            if (strcmp(res, value) == 0) {
+            int f = check_unique(data, a, value);
+            if (f) {
                 fclose(table);
                 fclose(data);
                 printf("\tErro: impossivel inserir %s no atributo %s (tabela %s); chave já existe", value, nome, ntable);
@@ -121,14 +177,21 @@ int insert(FILE* sql) {
             }
         }
 
-        if (ord) pos = find_value_pos(data, a, value);
+        if (ord) pos = find_pos(data, a, value);
 
         ++a;
         r = fscanf(table, "%s", att);
     }
 
-    if (ord) rewrite_dad(pos, tupla);
-    else fprintf(data, "%s\n", tupla); // escreve no fim do arquivo
+    if (pos != -1) {
+        fclose(data);
+        rewrite_dad(ndata, pos, tupla); // escreve na ordem
+    }
+    else {
+        fseek(data, 0L, SEEK_END);
+        fprintf(data, "%s\n", tupla); // escreve no fim do arquivo
+        fclose(data);
+    }
 
     if ((card/10) < ((card + 1)/10)) {
         fclose(table);
@@ -140,7 +203,6 @@ int insert(FILE* sql) {
         fclose(table);
     }
 
-    fclose(data);
     return 0;
 }
 

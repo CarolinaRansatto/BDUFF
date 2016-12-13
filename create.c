@@ -12,6 +12,7 @@ char* format(char* s) {
 }
 
 int create(FILE* sql) {
+    printf("chegou no create\n");
     char narq[31], table[31], narq_dad[31];
     fscanf(sql, " TABLE %s (", table);
 
