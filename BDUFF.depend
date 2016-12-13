@@ -1,10 +1,20 @@
 # depslib dependency file v1.0
-1480449266 source:c:\users\carolina\dropbox\faculdade\codeblocks\bduff\main.c
+1480878574 source:g:\trabalhobd\main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 
-1480826304 source:c:\users\carolina\documents\github\bduff\main.c
+1481661592 source:c:\users\injunior\documents\bduff\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1481661610 source:c:\users\injunior\documents\bduff\create.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1481661622 source:c:\users\injunior\documents\bduff\select.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>

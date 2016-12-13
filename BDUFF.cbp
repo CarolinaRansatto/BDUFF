@@ -32,7 +32,16 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="create.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="insert.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="select.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
