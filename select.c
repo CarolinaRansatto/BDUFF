@@ -11,22 +11,34 @@ int select(FILE* sql) {
         logo em seguida lido e executado.
     **/
     // TODO: testes
+    char table[31], data[31], op[31], atributos[201];
 
-    char table[31], data[31];
-    // "SELECT * FROM TABLE_NAME"
-    fscanf(sql, " FROM %s ", table); // talvez esse regex não funcione
-    strcpy(data, table);
-    strcat(table, ".ctl");
-    strcat(data, ".dad");
+    // "SELECT A,B,C FROM TABLE_NAME"
+    fscanf(sql,"%s", atributos); // pega todos os atributos
+    fscanf(sql,"%s", table); // "pular" o from
+
+    fscanf(sql,"%s", table); // pega o nome da tabela
+
+    table[strlen(table)-1] = '\0';
+
+
+    strcpy(data, table); // data recebe table
+    strcpy(op, table); // op recebe table
+    strcat(table, ".ctl"); // concatena .ctl no table
+    strcat(data, ".dad"); // concatena .dad no data
+    strcat(op, ".alg"); // concatena .dad no data
 
     //TODO: abrir arquivos, achar dados, mostrar tuplas, gerar .alg
-
     FILE* arq_ctl = fopen(table, "rt");
     FILE* arq_dad = fopen(data, "rt");
+    // cria o .alg
+    FILE* arq_alg = fopen(op, "wt+");
 
+    create_projeta(arq_alg, table, atributos, table);
+    leitura_alg(arq_alg);
+    fclose(arq_alg);
     fclose(arq_dad);
     fclose(arq_ctl);
-
 
     return 0;
 }

@@ -32,6 +32,9 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="algebra.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="create.c">
 			<Option compilerVar="CC" />
 		</Unit>
