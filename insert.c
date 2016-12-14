@@ -43,6 +43,8 @@ int check_unique(FILE* arq, int ind, char* value) {
 long find_pos(FILE* arq, int ind, char* value) {
     fseek(arq, 0L, SEEK_SET);
     char tupla[501];
+    int is_int = 0;
+    if (value[0] != '\'') is_int = 1;
 
     while (1) {
         long pos = ftell(arq);
@@ -51,7 +53,9 @@ long find_pos(FILE* arq, int ind, char* value) {
         char *att = strtok(tupla, ",");
         for (i = 0; i < ind; i++)
             att = strtok(NULL, ",");
-        if (strcmp(att, value) > 0)
+        //como fazer pra int?
+        if (((!is_int) && ((strcmp(att, value) > 0))) ||
+            ((is_int) && (atoi(att) > atoi(value))))
             return pos;
     }
 }
@@ -144,12 +148,11 @@ int insert(FILE* sql) {
         char* value = strtok(values, ",");
         for (i = 0; i < a; i++)
             value = strtok(NULL, ",");
-        strcpy(values, tupla);
 
-        if ((nn) && (strcmp(value, "NULO") == 0)) {
+        if ((nn || chv) && (strcmp(value, "NULO") == 0)) {
             fclose(table);
             fclose(data);
-            printf("\tErro: atributo %s da tabela %s não pode ser nulo", nome, ntable);
+            printf("\tErro: atributo %s da tabela %s nao pode ser nulo", nome, ntable);
             return 1;
         }
 
@@ -172,13 +175,14 @@ int insert(FILE* sql) {
             if (f) {
                 fclose(table);
                 fclose(data);
-                printf("\tErro: impossivel inserir %s no atributo %s (tabela %s); chave já existe", value, nome, ntable);
+                printf("\tErro: impossivel inserir %s no atributo %s (tabela %s); chave ja existe", value, nome, ntable);
                 return 1;
             }
         }
 
         if (ord) pos = find_pos(data, a, value);
 
+        strcpy(values, tupla);
         ++a;
         r = fscanf(table, "%s", att);
     }
