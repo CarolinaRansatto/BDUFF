@@ -45,6 +45,10 @@ long find_pos(FILE* arq, int ind, char* value) {
     char tupla[501];
     int is_int = 0;
     if (value[0] != '\'') is_int = 1;
+    int j;
+    for(j = 0; value[j]; j++){
+      value[j] = tolower(value[j]);
+    }
 
     while (1) {
         long pos = ftell(arq);
@@ -53,7 +57,9 @@ long find_pos(FILE* arq, int ind, char* value) {
         char *att = strtok(tupla, ",");
         for (i = 0; i < ind; i++)
             att = strtok(NULL, ",");
-        //como fazer pra int?
+        for(i = 0; att[i] != '\0'; i++){
+          att[i] = tolower(att[i]);
+        }
         if (((!is_int) && ((strcmp(att, value) > 0))) ||
             ((is_int) && (atoi(att) > atoi(value))))
             return pos;
@@ -100,14 +106,14 @@ int insert(FILE* sql) {
 
     FILE* table = fopen(ntablef, "rt+");
     if (!table) {
-        printf("\tTentativa de inserir em tabela nao existente: %s", ntable);
+        printf("Tentativa de inserir em tabela nao existente: %s", ntable);
         return 1;
     }
 
     FILE* data = fopen(ndata, "at+");
     if (!data) {
         fclose(table);
-        printf("\tErro ao abrir o arquivo de dados %s", ndata);
+        printf("Erro ao abrir o arquivo de dados %s", ndata);
         return 1;
     }
 
@@ -152,21 +158,21 @@ int insert(FILE* sql) {
         if ((nn || chv) && (strcmp(value, "NULO") == 0)) {
             fclose(table);
             fclose(data);
-            printf("\tErro: atributo %s da tabela %s nao pode ser nulo", nome, ntable);
+            printf("Erro: atributo %s da tabela %s nao pode ser nulo", nome, ntable);
             return 1;
         }
 
         if ((is_int) && (value[0] == '\'')) {
             fclose(table);
             fclose(data);
-            printf("\tErro: impossivel inserir %s no atributo %s (tabela %s); deve ser inteiro", value, nome, ntable);
+            printf("Erro: impossivel inserir %s no atributo %s (tabela %s); deve ser inteiro", value, nome, ntable);
             return 1;
         }
 
-        if ((!is_int) && (value[0] != '\'')) {
+        if ((!is_int) && (value[0] != '\'') && (strcmp(value, "NULO") != 0)) {
             fclose(table);
             fclose(data);
-            printf("\tErro: impossivel inserir %s no atributo %s (tabela %s); deve ser string", value, nome, ntable);
+            printf("Erro: impossivel inserir %s no atributo %s (tabela %s); deve ser string", value, nome, ntable);
             return 1;
         }
 
@@ -175,7 +181,7 @@ int insert(FILE* sql) {
             if (f) {
                 fclose(table);
                 fclose(data);
-                printf("\tErro: impossivel inserir %s no atributo %s (tabela %s); chave ja existe", value, nome, ntable);
+                printf("Erro: impossivel inserir %s no atributo %s (tabela %s); chave ja existe", value, nome, ntable);
                 return 1;
             }
         }
