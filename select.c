@@ -34,11 +34,32 @@ int select(FILE* sql) {
     // cria o .alg
     FILE* arq_alg = fopen(op, "wt+");
 
+    // tira o .ctl de table antes de mandar pro create_projeta
+    table[strlen(table) - 4] = '\0';
+
     create_projeta(arq_alg, table, atributos, table);
-    leitura_alg(arq_alg);
-    fclose(arq_alg);
+
+
     fclose(arq_dad);
     fclose(arq_ctl);
 
+    leitura_alg(arq_alg);
+
+
+    fclose(arq_alg);
     return 0;
+}
+
+void mostraRelacao(FILE* arq_dad, FILE* arq_ctl ,char table){
+
+    printf("\n\t\t|||||||| %s |||||||||\n", table);
+    printf("-/----/---/----/----/---/----/----/----/---/---\n");
+
+    fseek(arq_dad, 0L, SEEK_SET);
+    fseek(arq_ctl, 0L, SEEK_SET);
+
+
+
+
+
 }
