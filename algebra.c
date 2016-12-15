@@ -6,7 +6,7 @@ void selection (){
 
 }
 
-void projeta(char table [31], int n, char atributos[181], char exit_table[31]){
+void projeta(char table [101], int n, char atributos[181], char exit_table[101]){
 
     // TODO: verificar para projeções do tipo *
     // TODO: adaptar nome dos arquivos de acordo com cada projeção de modo que todos fiquem diferentes
@@ -14,8 +14,8 @@ void projeta(char table [31], int n, char atributos[181], char exit_table[31]){
 
     char table_ctl [51];
     char table_dad [51];
-    char table_ctl_old [51];
-    char table_dad_old [51];
+    char table_ctl_old [36];
+    char table_dad_old [36];
 
     const char comma[2] = ",";
     char *token;
@@ -138,32 +138,144 @@ void create_projeta(FILE* alg, char* table, char* atributos, char* exit_table){
 
 }
 
-void junta(){
+void junta(char A[101], char B[31], char atributos[181], char Z[101]){
+    prod_cart(A, B, Z);
+    //selection();
+}
+
+void prod_cart(char A[101], char B[31], char Z[101]){
+
+    int i = 1, j = 1;
+
+    char A_ctl[36];
+    char A_dad[36];
+    char B_ctl[36];
+    char B_dad[36];
+    char Z_ctl[36];
+    char Z_dad[36];
+    char tupla1[181]; tupla1[0] = '\0';
+    char tupla2[181]; tupla2[0] = '\0';
+    int tuplas;
+    int colunas;
+
+    char comma [2] = ",";
+    char *token;
+    char *token2;
+
+    strcpy(A_ctl, A);
+    strcpy(A_dad, A);
+    strcpy(B_ctl, B);
+    strcpy(B_dad, B);
+    strcpy(Z_ctl, Z);
+    strcpy(Z_dad, Z);
+
+    // concatena os tipos dos arquivos
+    strcat(A_ctl, ".ctl");
+    strcat(A_dad, ".dad");
+    strcat(B_ctl, ".ctl");
+    strcat(B_dad, ".dad");
+    strcat(Z_ctl, "ProdCart.ctl");
+    strcat(Z_dad, "ProdCart.dad");
+
+    // abre todos arquivos
+    FILE * arq_A_ctl = fopen(A_ctl, "rt");
+    FILE * arq_A_dad = fopen(A_dad, "rt");
+    FILE * arq_B_ctl = fopen(B_ctl, "rt");
+    FILE * arq_B_dad = fopen(B_dad, "rt");
+    FILE * arq_Z_ctl = fopen(Z_ctl, "wt");
+    FILE * arq_Z_dad = fopen(Z_dad, "wt");
+
+    // Criando arquivo saida dad
+    while(i == 1){
+        i = fscanf(arq_A_dad, "%s", tupla1);
+        fseek(arq_B_dad, 0L, SEEK_SET);
+        j = 1;
+        while(j == 1 && i == 1){
+            j = fscanf(arq_B_dad, "%s", tupla2);
+            if (j == 1)
+                fprintf(arq_Z_dad, "%s,%s\n", tupla1, tupla2);
+        }
+    }
+
+    // Criando arquivo de saida ctl
+    // as variaveis tuplas1  e tuplas 2 estão sendo utilizadas como strings auxiliares aqui
+    fscanf(arq_A_ctl, "%s", tupla1);
+    fscanf(arq_B_ctl, "%s", tupla2);
+    token = strtok(tupla1, comma);
+    colunas = atoi(token);
+    token = strtok(NULL, comma);
+    tuplas = atoi(token);
+    token = strtok(tupla2, comma);
+    colunas += atoi(token);
+    token = strtok(NULL, comma);
+    tuplas *= atoi(token);
+    fprintf(arq_Z_ctl, "%d,%d", colunas, tuplas);
+
+    // Todos atributos de A
+    i = 1;
+    while (i == 1){
+       i =  fscanf(arq_A_ctl, "%s", tupla1);
+       if (i == 1)
+            fprintf(arq_Z_ctl, "\n%s", tupla1);
+
+    }
+    // Todos atributos de B
+    i = 1;
+    while (i == 1){
+        i = fscanf(arq_B_ctl, "%s", tupla1);
+        if (i == 1)
+            fprintf(arq_Z_ctl, "\n%s", tupla1);
+    }
+
+    // fecha todos arquivos
+    fclose(arq_A_ctl);
+    fclose(arq_A_dad);
+    fclose(arq_B_ctl);
+    fclose(arq_B_dad);
+    fclose(arq_Z_ctl);
+    fclose(arq_Z_dad);
+
+}
+
+void create_junta(FILE* alg, char* A, char* B, char* atributos, char* exit_table){
+
+    strcpy(exit_table, A);
+    strcat(exit_table, "+");
+    strcat(exit_table, B);
+    strcat(exit_table, "_");
+    strcat(exit_table, atributos);
+    strcat(exit_table, "_Joint");
+
+    fprintf(alg, "J(%s,%s,%s,%s)\n", A, B, atributos, exit_table);
 
 }
 
 void leitura_alg(FILE* alg){
     fseek(alg, 0L, SEEK_SET);
-    int i = 1, j;
+    int i = 1, j, k = 0;
     char op;
-    char A [31];  // Relação de entrada A
-    char B [31]; // Relação de entrada B
-    char Z [31]; // Relação de saída Z
+    char A [101];  // Relação de entrada A
+    char B [101]; // Relação de entrada B
+    char Z [101]; // Relação de saída Z
     char request [301];
     char N [12];
     char atributos [181];
-    atributos[0] = '\0'; // inicializando com lixo?
     int n;
 
     while (i == 1){
         i = fscanf(alg, "%c", &op);
+
+        // limpa as variáveiso
+        j = 0; k = 0; n = 0; A[0] = '\0'; B[0] = '\0'; Z[0] = '\0'; request[0] = '\0';
+        N[0] = '\0'; atributos[0] = '\0';
+
         // operação de projeção
         if (op == 'P') {
 
             // P(A, N, ATTS[], Z)
             fscanf(alg, "%c", &op); // para sumir com o '('
             fscanf(alg, "%s", request);
-            printf("\nRequest = %s", request);
+            printf("\nRequest projeção = %s", request);
 
             // pega a relação de entrada
             for (j = 0; request[j] != ',' ; j++){
@@ -173,15 +285,12 @@ void leitura_alg(FILE* alg){
 
             // pega o número de atributos
             printf("\nTabela = %s", A);
-            int k = 0;
             for (j++;request[j] != ',';j++, k++){
                 N[strlen(N)+1] = '\0';
                 N[k] = request[j];
             }
 
             n = atoi(N);
-
-            printf("\nn = %d", n);
 
             // pega os atributos com a vírgula no final
             int y = 0; // contador de vírgulas
@@ -194,7 +303,7 @@ void leitura_alg(FILE* alg){
             }
 
             // tira a vírgula dos atributos
-            atributos[strlen(atributos) -1 ] = '\0';
+            atributos[strlen(atributos) -1] = '\0';
 
             k = 0;
             Z[0] = '\0'; // Z estava inicializando com lixo
@@ -203,13 +312,42 @@ void leitura_alg(FILE* alg){
                 Z[strlen(Z)+1] = '\0';
                 Z[k] = request[j];
             }
-
-            printf("\nZ = %s", Z);
-            printf("\natributos = %s", atributos);
-
             projeta(A, n, atributos, Z);
         }
         else if (op == 'S') selection();
-        else if (op == 'J') junta();
+        else if (op == 'J') {
+            // J(A,B,T=V,Z)
+
+            fscanf(alg, "%c", &op); // para sumir com o '('
+            fscanf(alg, "%s", request);
+            printf("\nRequest junção = %s", request);
+
+             // pega a primeira relação de entrada
+            for (j = 0; request[j] != ',' ; j++){
+                A[strlen(A)+1] = '\0';
+                A[j] = request[j];
+            }
+
+            // pega a segunda relação de entrada
+            for (j++, k = 0; request[j] != ',' ; j++, k++){
+                B[strlen(B)+1] = '\0';
+                B[k] = request[j];
+            }
+
+            // pega os atributos de comparação
+            for (j++, k = 0; request[j] != ',' ; j++, k++){
+                atributos[strlen(atributos)+1] = '\0';
+                atributos[k] = request[j];
+            }
+
+            // pega a relação de saída
+            for (j++, k = 0; request[j] != ')' ; j++, k++){
+                Z[strlen(Z)+1] = '\0';
+                Z[k] = request[j];
+            }
+
+            junta(A, B, atributos, Z);
+        }
+
     }
 }
