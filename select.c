@@ -4,10 +4,10 @@
 
 int select(FILE* sql) {
     /**
-        um comando de consulta aos dados (SELECT – Seção 6) e,
+        um comando de consulta aos dados (SELECT â€“ SeÃ§Ã£o 6) e,
         neste caso, um arquivo .alg
-        contendo a sequência de comandos algébricos
-        correspondentes, um em cada linha, deverá ser gerado e
+        contendo a sequÃªncia de comandos algÃ©bricos
+        correspondentes, um em cada linha, deverÃ¡ ser gerado e
         logo em seguida lido e executado.
     **/
     // TODO: testes
@@ -20,7 +20,7 @@ int select(FILE* sql) {
 
     FILE* arq_alg;
 
-    // entrou em uma junção
+    // entrou em uma junÃ§Ã£o
     if (table[0] == '('){
         int i = 0;
         // tira o parenteses
@@ -32,17 +32,17 @@ int select(FILE* sql) {
 
         arq_alg = fopen(op, "wt+");
 
-        fscanf(sql,"%s", data); // pega o JOIN (data é usada como auxiliar para lixo)
+        fscanf(sql,"%s", data); // pega o JOIN (data Ã© usada como auxiliar para lixo)
         fscanf(sql,"%s", table2); // pega o nome da segunda tabela
 
-        fscanf(sql,"%s", data); // pega o ON (data é usada como auxiliar para lixo)
-        fscanf(sql,"%s", atributos2); // pega a condição
+        fscanf(sql,"%s", data); // pega o ON (data Ã© usada como auxiliar para lixo)
+        fscanf(sql,"%s", atributos2); // pega a condiÃ§Ã£o
 
-        atributos2[strlen(atributos2) -2 ] = '\0'; // tira o ponto e vírugla e parenteses
+        atributos2[strlen(atributos2) -2 ] = '\0'; // tira o ponto e vÃ­rugla e parenteses
         // TODO: consertar essa parte para ceitar clausulas WHERE
         create_junta(arq_alg, table, table2, atributos2, exit_table);
     }else {
-        table[strlen(table)-1] = '\0'; // tira o ponto e vírgula caso n entre em uma junção
+        table[strlen(table)-1] = '\0'; // tira o ponto e vÃ­rgula caso n entre em uma junÃ§Ã£o
         strcpy(exit_table, table);
 
         strcpy(op, table); // op recebe table
@@ -54,10 +54,11 @@ int select(FILE* sql) {
     // WHERE -> STATMENTS
     fscanf(sql, "%s", data);
     fscanf(sql, "%s", data);
+    
+    // S(A,T, O, v, Z)
+    create_select(table, data, exit_table);
 
-    create_select(data);
-
-    // aqui já tem que receber as condições depois da junção
+    // aqui jÃ¡ tem que receber as condiÃ§Ãµes depois da junÃ§Ã£o
     strcpy(data, exit_table); // data recebe table
     strcpy(table, exit_table);
     strcat(table, ".ctl"); // concatena .ctl no table
