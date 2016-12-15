@@ -52,14 +52,13 @@ int select(FILE* sql) {
 
 void mostraRelacao(FILE* arq_dad, FILE* arq_ctl ,char table){
 
+
+    // TODO: concluir
     printf("\n\t\t|||||||| %s |||||||||\n", table);
     printf("-/----/---/----/----/---/----/----/----/---/---\n");
 
     fseek(arq_dad, 0L, SEEK_SET);
     fseek(arq_ctl, 0L, SEEK_SET);
-
-
-
 
 
 }

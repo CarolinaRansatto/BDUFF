@@ -21,6 +21,9 @@ void projeta(char table [31], int n, char atributos[181], char exit_table[31]){
     char *token;
     char *token2;
 
+    int posicoes[n];
+    int k = 0; //contador para as posicoes
+
     strcpy(table_ctl, table);
     strcpy(table_ctl_old, table);
     strcpy(table_dad, table);
@@ -39,6 +42,7 @@ void projeta(char table [31], int n, char atributos[181], char exit_table[31]){
     int tuplas;
     int colunas_old;
     char info [101];
+    char atts [181]; // strtok_r estava quebrando a string atributos, usando essa como auxiliar...
 
     // não tem como usar strtok em aninhado. usando strtok_r no lugar
     char *end_token; // ponteiro pra identificação do strtok_r
@@ -53,36 +57,73 @@ void projeta(char table [31], int n, char atributos[181], char exit_table[31]){
     //começa a escrever o arq_ctl
     fprintf(arq_ctl,"%d,%d\n", n,tuplas);
 
-    // TODO: completar essa parte
     // verifica se a coluna que estamos lendo do ctl antigo é a coluna que queremos projetar, depois escreve no novo ctl
+    // ao mesmo tempo cria a projeção .dad do arquivo
     int i,j;
+    fscanf(arq_ctl_old, "%s", info);
     token = strtok_r(info, comma, &end_token);
     for (j = 0; j < colunas_old; j++){
-        fscanf(arq_ctl_old, "%s", info);
-        token2 = strtok_r(atributos, comma, &end_token2);
+        strcpy(atts, atributos); //recuperando a string original
+        token2 = strtok_r(atts, comma, &end_token2);
         for (i = 0; i < n; i++){
-            if (token == token2){
+            if (token2){
+                if (strcmp(token, token2) == 0){
+                // grava a posição do atributo pra projetar .dad depois
+                posicoes[k] = j;
+                k++;
+                // se os atributos tiverem o mesmo nome, escreve no arquivo
                 fprintf(arq_ctl, "%s", token);
+                // anda pra pegar a linha toda do arquivo e escrever no novo ctl
                 token = strtok_r(NULL, comma, &end_token);
-                while(token != NULL){
-                    fprintf(arq_ctl, ",%s", token);
-                    token = strtok_r(NULL, comma, &end_token);
-                }
-                //fprintf(arq_ctl, "\n");
+                    while(token != NULL){
+                        fprintf(arq_ctl, ",%s", token);
+                        token = strtok_r(NULL, comma, &end_token);
+                    }
+                fprintf(arq_ctl, "\n");
                 break;
+                }
+                // anda com o token de atributos
+                token2 = strtok_r(NULL, comma, &end_token2);
             }
-            token2 = strtok_r(NULL, comma, &end_token2);
         }
-        token = strtok_r(info, comma, &end_token);
+        fscanf(arq_ctl_old, "%s", info); // pega a próxima linha do arquivo antigo
+        token = strtok_r(info, comma, &end_token); // atualiza o token pra nova linha
     }
-
 
     // cria um novo arquivo dad da projeção
     FILE* arq_dad = fopen(table_dad, "wt+");
 
+    // abre o arquivo antigo da projeção
+    FILE* arq_dad_old = fopen(table_dad_old, "r");
+
+
+
+    // itera o arquivo .dad original
+    for (i=0; i < tuplas; i++){
+        k = 0;
+        fscanf(arq_dad_old, "%s", info); // lê a tupla
+        // pega a primeira celula da tupla
+        token = strtok_r(info, comma, &end_token); // reutiliza as variaveis de tokens inuteis aqui
+        // começa a ler toda a tupla e escreve as colunas desejadas
+        for (j = 0; j <= posicoes[n-1]; j++){
+            if (posicoes[k] == j){ // se a posição que você está tratando no momento é igual à posição do token atualmente
+                if (k == 0)
+                    fprintf(arq_dad, "%s", token);
+                else fprintf(arq_dad, ",%s", token); // se não for a primeira celula bota uma virgula
+                k++;
+            }
+            token = strtok_r(NULL, comma, &end_token); // passa pra proxima celula da tupla
+
+        }
+        fprintf(arq_dad, "\n");
+
+    }
+
     fclose(arq_ctl);
     fclose(arq_ctl_old);
     fclose(arq_dad);
+    fclose(arq_dad_old);
+
 
 
 }
