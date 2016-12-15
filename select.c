@@ -11,7 +11,7 @@ int select(FILE* sql) {
         logo em seguida lido e executado.
     **/
     // TODO: testes
-    char table[101], data[101], table2[101], op[31], atributos[201], exit_table[101];
+    char table[101], data[101], table2[101], op[31], atributos[201], atributos2[201], exit_table[101];
 
     // "SELECT A,B,C FROM TABLE_NAME"
     fscanf(sql,"%s", atributos); // pega todos os atributos
@@ -36,12 +36,11 @@ int select(FILE* sql) {
         fscanf(sql,"%s", table2); // pega o nome da segunda tabela
 
         fscanf(sql,"%s", data); // pega o ON (data é usada como auxiliar para lixo)
-        fscanf(sql,"%s", atributos); // pega a condição
+        fscanf(sql,"%s", atributos2); // pega a condição
 
-        atributos[strlen(atributos) -2 ] = '\0'; // tira o ponto e vírugla e parenteses
+        atributos2[strlen(atributos2) -2 ] = '\0'; // tira o ponto e vírugla e parenteses
         // TODO: consertar essa parte para ceitar clausulas WHERE
-
-        create_junta(arq_alg, table, table2, atributos, exit_table);
+        create_junta(arq_alg, table, table2, atributos2, exit_table);
     }else {
         table[strlen(table)-1] = '\0'; // tira o ponto e vírgula caso n entre em uma junção
         strcpy(exit_table, table);
@@ -50,8 +49,13 @@ int select(FILE* sql) {
         strcat(op, ".alg"); // concatena .dad no data
 
         arq_alg = fopen(op, "wt+");
-
     }
+
+    // WHERE -> STATMENTS
+    fscanf(sql, "%s", data);
+    fscanf(sql, "%s", data);
+
+    create_select(data);
 
     // aqui já tem que receber as condições depois da junção
     strcpy(data, exit_table); // data recebe table

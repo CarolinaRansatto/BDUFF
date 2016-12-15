@@ -12,10 +12,10 @@ void projeta(char table [101], int n, char atributos[181], char exit_table[101])
     // TODO: adaptar nome dos arquivos de acordo com cada projeção de modo que todos fiquem diferentes
     // TODO: receber projeção de tuplas que podem ser nulas, adaptando o número de tuplas finais se necessário
 
-    char table_ctl [51];
-    char table_dad [51];
-    char table_ctl_old [36];
-    char table_dad_old [36];
+    char table_ctl [101];
+    char table_dad [101];
+    char table_ctl_old [101];
+    char table_dad_old [101];
 
     const char comma[2] = ",";
     char *token;
@@ -41,7 +41,7 @@ void projeta(char table [101], int n, char atributos[181], char exit_table[101])
 
     int tuplas;
     int colunas_old;
-    char info [101];
+    char info [201];
     char atts [181]; // strtok_r estava quebrando a string atributos, usando essa como auxiliar...
 
     // não tem como usar strtok em aninhado. usando strtok_r no lugar
@@ -51,6 +51,7 @@ void projeta(char table [101], int n, char atributos[181], char exit_table[101])
     fscanf(arq_ctl_old, "%s", info);
     token = strtok_r(info,comma, &end_token);
     colunas_old = atoi(token);
+
     token = strtok_r(NULL,comma, &end_token);
     tuplas = atoi(token);
 
@@ -96,8 +97,6 @@ void projeta(char table [101], int n, char atributos[181], char exit_table[101])
     // abre o arquivo antigo da projeção
     FILE* arq_dad_old = fopen(table_dad_old, "r");
 
-
-
     // itera o arquivo .dad original
     for (i=0; i < tuplas; i++){
         k = 0;
@@ -113,10 +112,8 @@ void projeta(char table [101], int n, char atributos[181], char exit_table[101])
                 k++;
             }
             token = strtok_r(NULL, comma, &end_token); // passa pra proxima celula da tupla
-
         }
         fprintf(arq_dad, "\n");
-
     }
 
     fclose(arq_ctl);
@@ -124,13 +121,12 @@ void projeta(char table [101], int n, char atributos[181], char exit_table[101])
     fclose(arq_dad);
     fclose(arq_dad_old);
 
-
-
 }
 
 void create_projeta(FILE* alg, char* table, char* atributos, char* exit_table){
-    int i, n=1;
-    for (i=0; atributos[i] != '\0' ; i++)
+    int i=0, n=1;
+    printf("\natributos : %s", atributos);
+    for (i; atributos[i] != '\0' ; i++)
         if(atributos[i] == ',')
             n++;
 
@@ -138,21 +134,21 @@ void create_projeta(FILE* alg, char* table, char* atributos, char* exit_table){
 
 }
 
-void junta(char A[101], char B[31], char atributos[181], char Z[101]){
+void junta(char A[101], char B[101], char atributos[181], char Z[101]){
     prod_cart(A, B, Z);
     //selection();
 }
 
-void prod_cart(char A[101], char B[31], char Z[101]){
+void prod_cart(char A[101], char B[101], char Z[101]){
 
     int i = 1, j = 1;
 
-    char A_ctl[36];
-    char A_dad[36];
-    char B_ctl[36];
-    char B_dad[36];
-    char Z_ctl[36];
-    char Z_dad[36];
+    char A_ctl[101];
+    char A_dad[101];
+    char B_ctl[101];
+    char B_dad[101];
+    char Z_ctl[101];
+    char Z_dad[101];
     char tupla1[181]; tupla1[0] = '\0';
     char tupla2[181]; tupla2[0] = '\0';
     int tuplas;
@@ -169,13 +165,17 @@ void prod_cart(char A[101], char B[31], char Z[101]){
     strcpy(Z_ctl, Z);
     strcpy(Z_dad, Z);
 
+    printf("\narquivo = %s", Z_ctl);
+
     // concatena os tipos dos arquivos
     strcat(A_ctl, ".ctl");
     strcat(A_dad, ".dad");
     strcat(B_ctl, ".ctl");
     strcat(B_dad, ".dad");
-    strcat(Z_ctl, "ProdCart.ctl");
-    strcat(Z_dad, "ProdCart.dad");
+    strcat(Z_ctl, ".ctl");
+    strcat(Z_dad, ".dad");
+
+    printf("\narquivo = %s", Z_ctl);
 
     // abre todos arquivos
     FILE * arq_A_ctl = fopen(A_ctl, "rt");
