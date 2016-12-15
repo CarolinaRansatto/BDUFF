@@ -2,15 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-void selection (){
-
+void create_selection (char A [101], char* cond, char* exit_table){ 
+    
 }
-
 void projeta(char table [101], int n, char atributos[181], char exit_table[101]){
 
-    // TODO: verificar para projeções do tipo *
-    // TODO: adaptar nome dos arquivos de acordo com cada projeção de modo que todos fiquem diferentes
-    // TODO: receber projeção de tuplas que podem ser nulas, adaptando o número de tuplas finais se necessário
+    // TODO: verificar para projeÃ§Ãµes do tipo *
+    // TODO: adaptar nome dos arquivos de acordo com cada projeÃ§Ã£o de modo que todos fiquem diferentes
+    // TODO: receber projeÃ§Ã£o de tuplas que podem ser nulas, adaptando o nÃºmero de tuplas finais se necessÃ¡rio
 
     char table_ctl [101];
     char table_dad [101];
@@ -34,7 +33,7 @@ void projeta(char table [101], int n, char atributos[181], char exit_table[101])
     strcat(table_dad, "Proj.dad");
     strcat(table_dad_old, ".dad");
 
-    // cria um novo arquivo ctl da projeção
+    // cria um novo arquivo ctl da projeÃ§Ã£o
     FILE* arq_ctl = fopen(table_ctl, "wt"); //criando o arquivo
     // abre arquivo dad da tabela original
     FILE* arq_ctl_old = fopen(table_ctl_old, "rt"); // ready only
@@ -44,9 +43,9 @@ void projeta(char table [101], int n, char atributos[181], char exit_table[101])
     char info [201];
     char atts [181]; // strtok_r estava quebrando a string atributos, usando essa como auxiliar...
 
-    // não tem como usar strtok em aninhado. usando strtok_r no lugar
-    char *end_token; // ponteiro pra identificação do strtok_r
-    char *end_token2; // ponteiro pra identificação do strtok_r
+    // nÃ£o tem como usar strtok em aninhado. usando strtok_r no lugar
+    char *end_token; // ponteiro pra identificaÃ§Ã£o do strtok_r
+    char *end_token2; // ponteiro pra identificaÃ§Ã£o do strtok_r
 
     fscanf(arq_ctl_old, "%s", info);
     token = strtok_r(info,comma, &end_token);
@@ -55,11 +54,11 @@ void projeta(char table [101], int n, char atributos[181], char exit_table[101])
     token = strtok_r(NULL,comma, &end_token);
     tuplas = atoi(token);
 
-    //começa a escrever o arq_ctl
+    //comeÃ§a a escrever o arq_ctl
     fprintf(arq_ctl,"%d,%d\n", n,tuplas);
 
-    // verifica se a coluna que estamos lendo do ctl antigo é a coluna que queremos projetar, depois escreve no novo ctl
-    // ao mesmo tempo cria a projeção .dad do arquivo
+    // verifica se a coluna que estamos lendo do ctl antigo Ã© a coluna que queremos projetar, depois escreve no novo ctl
+    // ao mesmo tempo cria a projeÃ§Ã£o .dad do arquivo
     int i,j;
     fscanf(arq_ctl_old, "%s", info);
     token = strtok_r(info, comma, &end_token);
@@ -69,7 +68,7 @@ void projeta(char table [101], int n, char atributos[181], char exit_table[101])
         for (i = 0; i < n; i++){
             if (token2){
                 if (strcmp(token, token2) == 0){
-                // grava a posição do atributo pra projetar .dad depois
+                // grava a posiÃ§Ã£o do atributo pra projetar .dad depois
                 posicoes[k] = j;
                 k++;
                 // se os atributos tiverem o mesmo nome, escreve no arquivo
@@ -87,28 +86,28 @@ void projeta(char table [101], int n, char atributos[181], char exit_table[101])
                 token2 = strtok_r(NULL, comma, &end_token2);
             }
         }
-        fscanf(arq_ctl_old, "%s", info); // pega a próxima linha do arquivo antigo
+        fscanf(arq_ctl_old, "%s", info); // pega a prÃ³xima linha do arquivo antigo
         token = strtok_r(info, comma, &end_token); // atualiza o token pra nova linha
     }
 
-    // cria um novo arquivo dad da projeção
+    // cria um novo arquivo dad da projeÃ§Ã£o
     FILE* arq_dad = fopen(table_dad, "wt+");
 
-    // abre o arquivo antigo da projeção
+    // abre o arquivo antigo da projeÃ§Ã£o
     FILE* arq_dad_old = fopen(table_dad_old, "r");
 
     // itera o arquivo .dad original
     for (i=0; i < tuplas; i++){
         k = 0;
-        fscanf(arq_dad_old, "%s", info); // lê a tupla
+        fscanf(arq_dad_old, "%s", info); // lÃª a tupla
         // pega a primeira celula da tupla
         token = strtok_r(info, comma, &end_token); // reutiliza as variaveis de tokens inuteis aqui
-        // começa a ler toda a tupla e escreve as colunas desejadas
+        // comeÃ§a a ler toda a tupla e escreve as colunas desejadas
         for (j = 0; j <= posicoes[n-1]; j++){
-            if (posicoes[k] == j){ // se a posição que você está tratando no momento é igual à posição do token atualmente
+            if (posicoes[k] == j){ // se a posiÃ§Ã£o que vocÃª estÃ¡ tratando no momento Ã© igual Ã  posiÃ§Ã£o do token atualmente
                 if (k == 0)
                     fprintf(arq_dad, "%s", token);
-                else fprintf(arq_dad, ",%s", token); // se não for a primeira celula bota uma virgula
+                else fprintf(arq_dad, ",%s", token); // se nÃ£o for a primeira celula bota uma virgula
                 k++;
             }
             token = strtok_r(NULL, comma, &end_token); // passa pra proxima celula da tupla
@@ -198,7 +197,7 @@ void prod_cart(char A[101], char B[101], char Z[101]){
     }
 
     // Criando arquivo de saida ctl
-    // as variaveis tuplas1  e tuplas 2 estão sendo utilizadas como strings auxiliares aqui
+    // as variaveis tuplas1  e tuplas 2 estÃ£o sendo utilizadas como strings auxiliares aqui
     fscanf(arq_A_ctl, "%s", tupla1);
     fscanf(arq_B_ctl, "%s", tupla2);
     token = strtok(tupla1, comma);
@@ -254,9 +253,9 @@ void leitura_alg(FILE* alg){
     fseek(alg, 0L, SEEK_SET);
     int i = 1, j, k = 0;
     char op;
-    char A [101];  // Relação de entrada A
-    char B [101]; // Relação de entrada B
-    char Z [101]; // Relação de saída Z
+    char A [101];  // RelaÃ§Ã£o de entrada A
+    char B [101]; // RelaÃ§Ã£o de entrada B
+    char Z [101]; // RelaÃ§Ã£o de saÃ­da Z
     char request [301];
     char N [12];
     char atributos [181];
@@ -265,25 +264,25 @@ void leitura_alg(FILE* alg){
     while (i == 1){
         i = fscanf(alg, "%c", &op);
 
-        // limpa as variáveiso
+        // limpa as variÃ¡veiso
         j = 0; k = 0; n = 0; A[0] = '\0'; B[0] = '\0'; Z[0] = '\0'; request[0] = '\0';
         N[0] = '\0'; atributos[0] = '\0';
 
-        // operação de projeção
+        // operaÃ§Ã£o de projeÃ§Ã£o
         if (op == 'P') {
 
             // P(A, N, ATTS[], Z)
             fscanf(alg, "%c", &op); // para sumir com o '('
             fscanf(alg, "%s", request);
-            printf("\nRequest projeção = %s", request);
+            printf("\nRequest projeÃ§Ã£o = %s", request);
 
-            // pega a relação de entrada
+            // pega a relaÃ§Ã£o de entrada
             for (j = 0; request[j] != ',' ; j++){
                 A[strlen(A)+1] = '\0';
                 A[j] = request[j];
             }
 
-            // pega o número de atributos
+            // pega o nÃºmero de atributos
             printf("\nTabela = %s", A);
             for (j++;request[j] != ',';j++, k++){
                 N[strlen(N)+1] = '\0';
@@ -292,8 +291,8 @@ void leitura_alg(FILE* alg){
 
             n = atoi(N);
 
-            // pega os atributos com a vírgula no final
-            int y = 0; // contador de vírgulas
+            // pega os atributos com a vÃ­rgula no final
+            int y = 0; // contador de vÃ­rgulas
 
             for (j++, k = 0; y < n ; j++, k++){
                 atributos[strlen(atributos)+1] = '\0';
@@ -302,12 +301,12 @@ void leitura_alg(FILE* alg){
                     y++;
             }
 
-            // tira a vírgula dos atributos
+            // tira a vÃ­rgula dos atributos
             atributos[strlen(atributos) -1] = '\0';
 
             k = 0;
             Z[0] = '\0'; // Z estava inicializando com lixo
-            // pega a relação de saída
+            // pega a relaÃ§Ã£o de saÃ­da
             for (j;request[j] != ')';j++, k++){
                 Z[strlen(Z)+1] = '\0';
                 Z[k] = request[j];
@@ -320,27 +319,27 @@ void leitura_alg(FILE* alg){
 
             fscanf(alg, "%c", &op); // para sumir com o '('
             fscanf(alg, "%s", request);
-            printf("\nRequest junção = %s", request);
+            printf("\nRequest junÃ§Ã£o = %s", request);
 
-             // pega a primeira relação de entrada
+             // pega a primeira relaÃ§Ã£o de entrada
             for (j = 0; request[j] != ',' ; j++){
                 A[strlen(A)+1] = '\0';
                 A[j] = request[j];
             }
 
-            // pega a segunda relação de entrada
+            // pega a segunda relaÃ§Ã£o de entrada
             for (j++, k = 0; request[j] != ',' ; j++, k++){
                 B[strlen(B)+1] = '\0';
                 B[k] = request[j];
             }
 
-            // pega os atributos de comparação
+            // pega os atributos de comparaÃ§Ã£o
             for (j++, k = 0; request[j] != ',' ; j++, k++){
                 atributos[strlen(atributos)+1] = '\0';
                 atributos[k] = request[j];
             }
 
-            // pega a relação de saída
+            // pega a relaÃ§Ã£o de saÃ­da
             for (j++, k = 0; request[j] != ')' ; j++, k++){
                 Z[strlen(Z)+1] = '\0';
                 Z[k] = request[j];
