@@ -51,16 +51,19 @@ int select(FILE* sql) {
         arq_alg = fopen(op, "wt+");
     }
 
-    // WHERE -> STATMENTS
+    /** WHERE -> STATMENTS
     fscanf(sql, "%s", data);
     fscanf(sql, "%s", data);
-    
-    // S(A,T, O, v, Z)
-    create_select(table, data, exit_table);
 
     // aqui já tem que receber as condições depois da junção
-    strcpy(data, exit_table); // data recebe table
+    //strcpy(table, exit_table);
+
+    // S(A,T, O, v, Z)
+    create_selection(arq_alg, table, data, exit_table);**/
+
     strcpy(table, exit_table);
+    strcpy(data, exit_table); // data recebe table
+
     strcat(table, ".ctl"); // concatena .ctl no table
     strcat(data, ".dad"); // concatena .dad no data
 

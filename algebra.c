@@ -2,9 +2,165 @@
 #include <stdlib.h>
 #include <string.h>
 
-void create_selection (char A [101], char* cond, char* exit_table){ 
-    
+
+void selection(){
 }
+
+void selection_joint(char Z[101], char atributos [181]){
+    int i = 0, j = 0,k = 0;
+    // ler o ctl
+    char Z_ctl [105];
+    char info[201];
+    int posicoes[2];
+    char* token;
+    char comma[2] = ",";
+
+    char atr1[101];
+    char atr2[101];
+
+    while (atributos[i] != '='){
+        atr1[i+1] = '\0';
+        atr1[i] = atributos[i];
+        i++;
+    }
+    i++;
+    while (atributos[i] != '\0'){
+        atr2[j+1] = '\0';
+        atr2[j] = atributos[i];
+        i++;j++;
+    }
+
+    strcpy(Z_ctl, Z);
+    strcat(Z_ctl, ".ctl");
+
+    FILE* arq_Z_ctl = fopen(Z_ctl, "rt+");
+
+    fscanf(arq_Z_ctl, "%s", info); // pega n,m
+
+    token = strtok(info, comma);
+    float colunas = atof(token);
+    float tuplas =  atof(token);
+    float tuplas2 = 0;
+
+    j = 0; i = 1;
+    while (i == 1){
+        i = fscanf(arq_Z_ctl, "%s", info);
+        token = strtok(info, comma);
+        if(strcmp(token, atr1) == 0 || strcmp(token, atr2) == 0){
+            posicoes[j] = k;
+            j++;
+        }
+        k++;
+    }
+
+    char Z_dad_old [105];
+    char Z_dad_new [106];
+
+    strcpy(Z_dad_old, Z);
+    strcpy(Z_dad_new, Z);
+    strcat(Z_dad_old, ".dad");
+    strcat(Z_dad_new, "t.dad");
+
+    // fazer as seleçoes no dad
+    FILE *arq_Z_dad_old = fopen(Z_dad_old, "rt");
+    FILE *arq_Z_dad_new= fopen(Z_dad_new, "wt+");
+
+    i= 1;
+    char info_aux [201];
+    while(i == 1){
+        i = fscanf(arq_Z_dad_old, "%s", info);
+        if (i == 1){
+            strcpy(info_aux, info);
+            token = strtok(info, comma);
+            for (j = 0; j < posicoes[0]; j++)
+                token = strtok(NULL, comma);
+
+            strcpy(atr1,token);
+            for(j=0; j < posicoes[1]-posicoes[0]; j++)
+                token = strtok(NULL, comma);
+
+            strcpy(atr2, token);
+
+            if (strcmp(atr2,atr1) == 0){
+                fprintf(arq_Z_dad_new, "%s\n", info_aux);
+                tuplas2++;
+            }
+        }
+    }
+
+    fclose(arq_Z_dad_old);
+
+    arq_Z_dad_old = fopen(Z_dad_old, "wt");
+    fseek(arq_Z_dad_new, 0L, SEEK_SET);
+    i = 1;
+    while (i == 1){
+        i = fscanf(arq_Z_dad_new, "%s", info);
+        if (i == 1){
+            fprintf(arq_Z_dad_old, "%s\n", info);
+        }
+    }
+
+    // atualiza número de tuplas do ctl antigo
+
+    fseek(arq_Z_ctl, 0L, SEEK_SET);
+
+    tuplas = tuplas/10;
+    tuplas2 = tuplas2/10;
+    tuplas = tuplas - tuplas2;
+
+    // TODO: criar lógica para tratar quantidade de casas dos números OU reescrever o arquivo
+    //fprintf(arq_Z_ctl, "%d,%d", colunas, tuplas);
+
+    fclose(arq_Z_ctl);
+    fclose(arq_Z_dad_old);
+    fclose(arq_Z_dad_new);
+    remove(Z_dad_new);
+}
+
+void create_selection (FILE* alg, char A [101], char* cond, char* Z){
+    // Verifica se é joint
+
+    int i = strlen(A) - 5, j = 0;
+    char aux [6] = "Joint";
+    for (i; A[i] != '\0'; i++,j++){
+        if (aux[j] != A[i]) break;
+    }
+
+    if (j != 5){
+        // então não é joint!
+        strcat(Z, "Selection");
+    }
+
+    // separa as condições
+    char atr [31],op [3],values[31];
+    atr[0] = '\0';
+    i = 0;
+    while(cond[i] != '<' && cond[i] != '>' && cond[i] != '='){
+        atr[i+ 1] = '\0';
+        atr[i] = cond[i] ;
+        i++;
+    }
+
+    op[0] = cond[i];
+    op[1] = '\0';
+    i++;
+    if (cond[i] == '=' || cond[i] == '>'){
+        op[1] = cond[i];
+        op[2] = '\0';-
+        i++;
+    }
+
+    int k = 0; values[0] = '\0';
+    while(cond[i] != ';'){
+        values[k+1] = '\0';
+        values[k] = cond[i];
+        i++; k++;
+    }
+
+    fprintf(alg, "S(%s,%s,%s,%s,%s)\n", A, atr, op, values, Z);
+
+}
+
 void projeta(char table [101], int n, char atributos[181], char exit_table[101]){
 
     // TODO: verificar para projeções do tipo *
@@ -124,7 +280,7 @@ void projeta(char table [101], int n, char atributos[181], char exit_table[101])
 
 void create_projeta(FILE* alg, char* table, char* atributos, char* exit_table){
     int i=0, n=1;
-    printf("\natributos : %s", atributos);
+    //printf("\natributos : %s", atributos);
     for (i; atributos[i] != '\0' ; i++)
         if(atributos[i] == ',')
             n++;
@@ -135,7 +291,7 @@ void create_projeta(FILE* alg, char* table, char* atributos, char* exit_table){
 
 void junta(char A[101], char B[101], char atributos[181], char Z[101]){
     prod_cart(A, B, Z);
-    //selection();
+    selection_joint(Z, atributos);
 }
 
 void prod_cart(char A[101], char B[101], char Z[101]){
@@ -163,8 +319,6 @@ void prod_cart(char A[101], char B[101], char Z[101]){
     strcpy(B_dad, B);
     strcpy(Z_ctl, Z);
     strcpy(Z_dad, Z);
-
-    printf("\narquivo = %s", Z_ctl);
 
     // concatena os tipos dos arquivos
     strcat(A_ctl, ".ctl");
@@ -243,7 +397,7 @@ void create_junta(FILE* alg, char* A, char* B, char* atributos, char* exit_table
     strcat(exit_table, B);
     strcat(exit_table, "_");
     strcat(exit_table, atributos);
-    strcat(exit_table, "_Joint");
+    strcat(exit_table, "_Join");
 
     fprintf(alg, "J(%s,%s,%s,%s)\n", A, B, atributos, exit_table);
 
@@ -252,7 +406,6 @@ void create_junta(FILE* alg, char* A, char* B, char* atributos, char* exit_table
 void leitura_alg(FILE* alg){
     fseek(alg, 0L, SEEK_SET);
     int i = 1, j, k = 0;
-    char op;
     char A [101];  // Relação de entrada A
     char B [101]; // Relação de entrada B
     char Z [101]; // Relação de saída Z
@@ -262,19 +415,17 @@ void leitura_alg(FILE* alg){
     int n;
 
     while (i == 1){
-        i = fscanf(alg, "%c", &op);
-
+        i = fscanf(alg, "%s", request);
         // limpa as variáveiso
-        j = 0; k = 0; n = 0; A[0] = '\0'; B[0] = '\0'; Z[0] = '\0'; request[0] = '\0';
+        j = 0; k = 0; n = 0; A[0] = '\0'; B[0] = '\0'; Z[0] = '\0';
         N[0] = '\0'; atributos[0] = '\0';
-
         // operação de projeção
-        if (op == 'P') {
+        if (request[0] == 'P') {
 
             // P(A, N, ATTS[], Z)
-            fscanf(alg, "%c", &op); // para sumir com o '('
-            fscanf(alg, "%s", request);
-            printf("\nRequest projeção = %s", request);
+            // pra tirar o 'P('
+            for (j = 0; j < strlen(request); j++)
+                request[j] = request[j+2];
 
             // pega a relação de entrada
             for (j = 0; request[j] != ',' ; j++){
@@ -283,7 +434,7 @@ void leitura_alg(FILE* alg){
             }
 
             // pega o número de atributos
-            printf("\nTabela = %s", A);
+           // printf("\nTabela = %s", A);
             for (j++;request[j] != ',';j++, k++){
                 N[strlen(N)+1] = '\0';
                 N[k] = request[j];
@@ -313,13 +464,20 @@ void leitura_alg(FILE* alg){
             }
             projeta(A, n, atributos, Z);
         }
-        else if (op == 'S') selection();
-        else if (op == 'J') {
+        else if (request[0] == 'S'){
+            // pra tirar o 'S('
+            for (j = 0; j < strlen(request); j++)
+                request[j] = request[j+2];
+
+            printf("\nselection request: %s", request);
+            selection();
+        }
+        else if (request[0] == 'J') {
             // J(A,B,T=V,Z)
 
-            fscanf(alg, "%c", &op); // para sumir com o '('
-            fscanf(alg, "%s", request);
-            printf("\nRequest junção = %s", request);
+            // pra tirar o 'J('
+            for (j = 0; j < strlen(request); j++)
+                request[j] = request[j+2];
 
              // pega a primeira relação de entrada
             for (j = 0; request[j] != ',' ; j++){

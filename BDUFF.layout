@@ -2,81 +2,39 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-<<<<<<< HEAD
-	<File name="select.c" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2870" topLine="0" />
-=======
-	<File name="create.c" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3523" topLine="96" />
->>>>>>> f1c01438d2b0a298760a604e213600aea9750d92
-		</Cursor>
-		<Folding>
-			<Collapse line="4" />
-			<Collapse line="5" />
-			<Collapse line="80" />
-		</Folding>
-	</File>
-	<File name="strrok_r_source.c" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-<<<<<<< HEAD
-			<Cursor1 position="513" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="insert.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-=======
-			<Cursor1 position="514" topLine="7" />
-		</Cursor>
-	</File>
-	<File name="insert.c" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
->>>>>>> f1c01438d2b0a298760a604e213600aea9750d92
+	<File name="main.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="0" topLine="0" />
 		</Cursor>
 	</File>
-<<<<<<< HEAD
-	<File name="main.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-=======
-	<File name="main.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
->>>>>>> f1c01438d2b0a298760a604e213600aea9750d92
+	<File name="create.c" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="902" topLine="0" />
+			<Cursor1 position="1555" topLine="0" />
 		</Cursor>
 	</File>
-<<<<<<< HEAD
-	<File name="algebra.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="algebra.c" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="7520" topLine="0" />
-=======
-	<File name="select.c" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="-2" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1992" topLine="38" />
->>>>>>> f1c01438d2b0a298760a604e213600aea9750d92
+			<Cursor1 position="2660" topLine="78" />
 		</Cursor>
 		<Folding>
-			<Collapse line="4" />
-			<Collapse line="8" />
-			<Collapse line="130" />
-			<Collapse line="140" />
-			<Collapse line="145" />
-			<Collapse line="252" />
+			<Collapse line="5" />
+			<Collapse line="119" />
+			<Collapse line="163" />
+			<Collapse line="280" />
+			<Collapse line="291" />
+			<Collapse line="296" />
+			<Collapse line="392" />
+			<Collapse line="405" />
 		</Folding>
 	</File>
-<<<<<<< HEAD
-	<File name="create.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="insert.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3523" topLine="69" />
-=======
-	<File name="algebra.c" open="1" top="1" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3951" topLine="86" />
->>>>>>> f1c01438d2b0a298760a604e213600aea9750d92
+			<Cursor1 position="0" topLine="0" />
 		</Cursor>
-		<Folding>
-			<Collapse line="141" />
-			<Collapse line="239" />
-			<Collapse line="252" />
-		</Folding>
+	</File>
+	<File name="select.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3123" topLine="59" />
+		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
