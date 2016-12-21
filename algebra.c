@@ -38,9 +38,9 @@ void selection_joint(char Z[101], char atributos [181]){
     fscanf(arq_Z_ctl, "%s", info); // pega n,m
 
     token = strtok(info, comma);
-    float colunas = atof(token);
-    float tuplas =  atof(token);
-    float tuplas2 = 0;
+    int colunas = atoi(token);
+    int tuplas =  0;
+   // int tuplas2 = 0;
 
     j = 0; i = 1;
     while (i == 1){
@@ -83,7 +83,7 @@ void selection_joint(char Z[101], char atributos [181]){
 
             if (strcmp(atr2,atr1) == 0){
                 fprintf(arq_Z_dad_new, "%s\n", info_aux);
-                tuplas2++;
+                tuplas++;
             }
         }
     }
@@ -104,12 +104,14 @@ void selection_joint(char Z[101], char atributos [181]){
 
     fseek(arq_Z_ctl, 0L, SEEK_SET);
 
-    tuplas = tuplas/10;
+    /**tuplas = tuplas/10;
     tuplas2 = tuplas2/10;
-    tuplas = tuplas - tuplas2;
+    tuplas = tuplas - tuplas2;**/
 
     // TODO: criar lógica para tratar quantidade de casas dos números OU reescrever o arquivo
-    //fprintf(arq_Z_ctl, "%d,%d", colunas, tuplas);
+    // (funciona as vezes, com pouco numero de tuplas, pois cria uma linha a mais no .ctl quando tem pelo dmenos uma casa decimal à mais) (lembrando que o número de tuplas depois da
+                                                      //seleção sempre vai ser menor ou igual não atrabalhando na hora de escrever no arquivo
+    fprintf(arq_Z_ctl, "%d,%d\n", colunas, tuplas);
 
     fclose(arq_Z_ctl);
     fclose(arq_Z_dad_old);
